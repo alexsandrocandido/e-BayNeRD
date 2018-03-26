@@ -5,7 +5,7 @@
 #-----------------------------------------------------------------------------#
 #-----------------------------------------------------------------------------#
 #                                Implemented by                               #
-#                     Alexsandro Cândido de Oliveira Silva                    #
+#                     Alexsandro CÃ¢ndido de Oliveira Silva                    #
 #                           alexsandro.silva@inpe.br                          #
 #            National Institute for Space Research (INPE) - Brazil            #
 #-----------------------------------------------------------------------------#
@@ -19,7 +19,7 @@ FUNCTION_write.the.heading.of.the.program <- function() {
 
          e-BayNeRD - ENHANCED BAYESIAN NETWORKS FOR RASTER DATA
                               Implemented by
-                   Alexsandro Cândido de Oliveira Silva
+                   Alexsandro CÃ¢ndido de Oliveira Silva
                         alexsandro.silva@inpe.br
             National Institute for Space Research (INPE) - Brazil
                             
@@ -1894,9 +1894,6 @@ FUNCTION_probabilities.bands <- function() {
                  main = 'Probability Band - Class ", i, "')", sep = ""))))
   }
   
-  cat("\n\n Computing the Shannon Entropy...\n")
-  FUNCTION_shannon.entropy()
-  
   # Probability Bands files path 
   files <- paste("./e-BayNeRD Outcomes/ProbBand_class", classes,".tif",
                  sep = "")
@@ -1945,6 +1942,9 @@ FUNCTION_probabilities.bands <- function() {
   save(eBayNeRDinfo,file="eBayNeRDinfo.RData") 
   load("eBayNeRDinfo.RData") #loading eBayNeRDinfo file
   eBayNeRDinfo<<-eBayNeRDinfo
+  
+  cat("\n\n Computing the Shannon Entropy...\n")
+  FUNCTION_shannon.entropy()
   
   if (Sys.info()[[1]] == 'Windows') {
     cat('\n\n === Done! ===\n\n')
@@ -2639,7 +2639,7 @@ FUNCTION_find.bestTPV<-function(n.slices = 101, criterion.number = 1) {
   
   cat("\n\nDone! Thank you for unsing e-BayNeRD. I would appreciate if you write an email to\n",
       "alexsandro.silva@inpe.br telling me your experiences with e-BayNeRD.\n\n",
-      "Best regards,\nAlexsandro Cândido de Oliveira Silva\n\n")
+      "Best regards,\nAlexsandro CÃ¢ndido de Oliveira Silva\n\n")
   
   invisible(gc())
 } 
@@ -2741,7 +2741,7 @@ FUNCTION_find.bestTPV<-function(n.slices = 101, criterion.number = 1) {
 #   load("eBayNeRDinfo.RData") #loading eBayNeRDinfo file
 #   eBayNeRDinfo<<-eBayNeRDinfo
 # 
-#   cat("\n\n\n Well done!!\n\n\nThank you for unsing BayNeRD. We would appreciate if you write an email to\n  acos@dpi.inpe.br or mello@ieee.org telling us your experiences with BayNeRD.\n\nPlease, don't forget to cite the e-BayNeRD paper in your publication.\n  To see how to cite, please use the menu 'How can I cite BayNeRD'\n  or the funtion 'FUNCTION_how.to.cite.the.program()'.\n\nBest regards,\nAlexsandro Cândido de Oliveira Silva\nand Marcio Pupin Mello.\n\n\n")
+#   cat("\n\n\n Well done!!\n\n\nThank you for unsing BayNeRD. We would appreciate if you write an email to\n  acos@dpi.inpe.br or mello@ieee.org telling us your experiences with BayNeRD.\n\nPlease, don't forget to cite the e-BayNeRD paper in your publication.\n  To see how to cite, please use the menu 'How can I cite BayNeRD'\n  or the funtion 'FUNCTION_how.to.cite.the.program()'.\n\nBest regards,\nAlexsandro CÃ¢ndido de Oliveira Silva\nand Marcio Pupin Mello.\n\n\n")
 # 
 # }
 
