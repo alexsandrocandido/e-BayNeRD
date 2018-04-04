@@ -14,7 +14,8 @@ To run the e-BayNeRD model:
 ```
 setwd("./working_folder")
 ```
-- And run the  following command to activate the e-BayNeRD menu in R. 
+- And run the following command to activate the e-BayNeRD menu in R (as highlighted in the image below). 
 ```
 source("e-BayNeRD.r")
 ```
+![e-baynerd](https://user-images.githubusercontent.com/37545308/38310835-f20eba0c-37f3-11e8-96f0-6f45ead6c38e.PNG)
