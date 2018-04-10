@@ -5,7 +5,7 @@
 #-----------------------------------------------------------------------------#
 #-----------------------------------------------------------------------------#
 #                                Implemented by                               #
-#                     Alexsandro Cândido de Oliveira Silva                    #
+#                     Alexsandro Candido de Oliveira Silva                    #
 #                           alexsandro.silva@inpe.br                          #
 #            National Institute for Space Research (INPE) - Brazil            #
 #-----------------------------------------------------------------------------#
