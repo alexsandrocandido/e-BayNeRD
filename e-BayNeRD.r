@@ -997,25 +997,23 @@ FUNCTION_draw.network <- function(nw, yr = c(0,350), xr = c(0,350)) {
   xc <- mean(xr)
   yc <- mean(yr)
   
-  
-  mode <- "Add"
-  
   newnet <- nw
+  
+  where <- t(matrix(unlist(lapply(newnet$nodes, function(x)x$position)), nrow=2))
+    
+  buttonx <- 30
+  buttony <- 30
+    
+  # Coordinates of the ADD, REMOVE and STOP buttons.
+  where <- rbind(where, c(2 * xc + buttonx, 2 * yc + buttony))
+  where <- rbind(where, c(2 * xc + buttonx, 2 * yc))
+  where <- rbind(where, c(2 * xc + buttonx, 2 * yc - buttony))
+
+  mode <- "Add"
   quit   <- FALSE
  
   while(!quit) {
-    
-    where <- t(matrix(unlist(
-      lapply(newnet$nodes, function(x)x$position)), nrow=2))
-    
-    buttonx <- 30
-    buttony <- 30
-    
-    # Coordinates of the ADD, REMOVE and STOP buttons.
-    where <- rbind(where, c(2 * xc + buttonx, 2 * yc + buttony))
-    where <- rbind(where, c(2 * xc + buttonx, 2 * yc))
-    where <- rbind(where, c(2 * xc + buttonx, 2 * yc - buttony))
-    
+        
     # Setting the buttons aspect
     if (mode == "Add") {
       bgadd  <- "blue4"
