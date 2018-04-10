@@ -1002,9 +1002,7 @@ FUNCTION_draw.network <- function(nw, yr = c(0,350), xr = c(0,350)) {
   
   newnet <- nw
   quit   <- FALSE
-  unit   <- 2 * pi / nw$n
-  
-  nlist  <- names(nw$nodes)
+ 
   while(!quit) {
     
     where <- t(matrix(unlist(
