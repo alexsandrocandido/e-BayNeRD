@@ -861,6 +861,7 @@ FUNCTION_read.context.variables <- function(subfolder = T) {
 }
 
  
+
 FUNCTION_create.node <- function(idx, parents, name=paste(idx), position=c(0,0)) {
   ## creator for class 'node'
   
@@ -900,8 +901,8 @@ FUNCTION_create.network <- function(df, yr = c(0,350), xr = c(0,350) )  {
   for (i in 1:nw$n) {
     pos <- c(cos(unit * i + pi/4), sin(unit * i + pi/4)) * xc * .9 + c(xc, yc)
     
-    nw$nodes[[i]] <- FUNCTION_create.node(idx = i, parents = c(), name = names(df)[i],
-                                position = pos)
+    nw$nodes[[i]] <- FUNCTION_create.node(idx = i, parents = c(),
+                                          name = names(df)[i], position = pos)
   }
   
   names(nw$nodes) <- names(df)
@@ -914,10 +915,11 @@ FUNCTION_create.network <- function(df, yr = c(0,350), xr = c(0,350) )  {
 
 AddArrow <- function(nw, j, i) {
   
-  if (i == j) {
+  if (i > nw$n | i == j){
     print(cat("\n\nThis arrow can be created!!\n"))
     return(nw = NULL)
   }
+  
   # Checking if j is parent of i.
   else if (!is.na(match(j, nw$nodes[[i]]$parents))) {
     print(cat("\n\nThis arrow already exist!!\n"))
@@ -935,7 +937,7 @@ AddArrow <- function(nw, j, i) {
 
 
 RemoveArrow <- function(nw, j, i) {
-  if (i == j) {
+  if (i > nw$n | i == j){
     return(nw = NULL)
   }
   
@@ -1127,17 +1129,16 @@ FUNCTION_draw.network <- function(nw, yr = c(0,350), xr = c(0,350)) {
 }
 
 
-  
 FUNCTION_graphical.model <- function() {    
   # Creates a Bayesian Network graphical model
   # and save the informations in the eBayNeRD.RData file.
   cat("\n\n\nInstructions:\n
       - A empty graph will be drawn. You will specify a Bayesian Network 
-          through a point and click interface;
+      through a point and click interface;
       - To insert an arc from the node 'A' to the node 'B', first check if the
-          'ADD' button is activated. Then click on node 'A' and after click on node 'B';
+      'ADD' button is activated. Then click on node 'A' and after click on node 'B';
       - To remove this arc, first click on 'REMOVE' button in the topright box,
-          now you may remove the arc clicking on node 'A' and then on node 'B';
+      now you may remove the arc clicking on node 'A' and then on node 'B';
       - The program will not draw an arc if you create a cycle;
       - When your graph is done, check if it is correct and click 'STOP' button;
       - Please, always click ON the letters;\n\n")
@@ -1171,8 +1172,7 @@ FUNCTION_graphical.model <- function() {
   ok <- F
   while (ok == F) {
     net <- FUNCTION_create.network(all.variables)
-    cat("\n 
-        Please, specify the network graph model... \n\n")
+    cat("\n Please, specify the network graph model... \n\n")
     
     # Building a empty network. The user must to draw the arcs
     net <- FUNCTION_draw.network(net)
@@ -1194,7 +1194,7 @@ FUNCTION_graphical.model <- function() {
   
   flush.console()
   cat("\n\nRecording entered information... (please wait)\n\n")
-      
+  
   # bnlearn-deal package integration
   net.str <- bnlearn::model2network(deal::modelstring(net))
   
@@ -1225,7 +1225,6 @@ FUNCTION_graphical.model <- function() {
   invisible(gc())
   invisible(rm(list=ls()))
 }
-
 
 FUNCTION_discretization <- function(var.name, cont.data, method) {
   # Discretizes the data by a choosed method.
