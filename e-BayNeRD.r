@@ -860,6 +860,272 @@ FUNCTION_read.context.variables <- function(subfolder = T) {
   invisible(rm(list=ls()))
 }
 
+ 
+FUNCTION_create.node <- function(idx, parents, name=paste(idx), position=c(0,0)) {
+  ## creator for class 'node'
+  
+  ## idx:      The unique index of the node
+  ## name:     The plotted name
+  ## parents:  Vector with indices of parents
+  ## position: (x,y) coordinates  
+  
+  nd          <- list()
+  nd$idx      <- idx
+  nd$name     <- name
+  nd$parents  <- parents
+  nd$position <- position
+  
+  class(nd)  <- "node"
+  
+  return(nd)
+}
+
+
+FUNCTION_create.network <- function(df, yr = c(0,350), xr = c(0,350) )  {
+  ## creator for class 'network'
+  
+  
+  if (length(dim(df)) < 1) 
+    stop("It can't handle with networks with one node.\n")
+  
+  nw   <- list()
+  nw$n <- ncol(df)  ## df must have at least 2 columns...
+  
+  
+  nw$nodes <- list()
+  unit <- 2 * pi / nw$n
+  xc <- mean(xr)
+  yc <- mean(yr)
+  
+  for (i in 1:nw$n) {
+    pos <- c(cos(unit * i + pi/4), sin(unit * i + pi/4)) * xc * .9 + c(xc, yc)
+    
+    nw$nodes[[i]] <- FUNCTION_create.node(idx = i, parents = c(), name = names(df)[i],
+                                position = pos)
+  }
+  
+  names(nw$nodes) <- names(df)
+  
+  class(nw) <- "network"
+  
+  return(nw)
+}
+
+
+AddArrow <- function(nw, j, i) {
+  
+  if (i == j) {
+    print(cat("\n\nThis arrow can be created!!\n"))
+    return(nw = NULL)
+  }
+  # Checking if j is parent of i.
+  else if (!is.na(match(j, nw$nodes[[i]]$parents))) {
+    print(cat("\n\nThis arrow already exist!!\n"))
+    return(nw = NULL)
+  } # Checking if i is parent of j.
+  else if (!is.na(match(i, nw$nodes[[j]]$parents))) {
+    print(cat("\n\nThis arrow can be created!!\n"))
+    return(nw = NULL)
+  }
+  
+  # Adding j as parent of i.
+  nw$nodes[[i]]$parents <- sort(c(nw$nodes[[i]]$parents, j))
+  return(nw)
+}
+
+
+RemoveArrow <- function(nw, j, i) {
+  if (i == j) {
+    return(nw = NULL)
+  }
+  
+  parents <- nw$nodes[[i]]$parents
+  
+  if (!length(intersect(parents, j)) > 0) {
+    print(cat("\n\nThere's no arrow there!\n"))
+    return(nw = NULL)
+  } else {
+    nw$nodes[[i]]$parents <- setdiff(nw$nodes[[i]]$parents, j)
+  }
+  
+  return(nw)
+}
+
+
+FUNCTION_plot.network <- function(nw) {
+  
+  par(mar = c(2, 2, 1, 1))
+  plot(0, 0, xlim = c(0, 400), ylim = c(0, 400), type = "n", axes = F,
+       xlab = "", ylab = "")
+  
+  ## show nodes
+  for (i in 1:nw$n) {
+    points(nw$nodes[[i]]$position[1], nw$nodes[[i]]$position[2],
+           cex = 6, pch = 19, col = "darkcyan")
+    text(nw$nodes[[i]]$position[1], nw$nodes[[i]]$position[2],
+         nw$nodes[[i]]$name, col = "black", cex = 1.5)
+  }
+  
+  ##< show arrows
+  for (i in 1:nw$n) {
+    ni <- nw$nodes[[i]]    # node i
+    if (length(ni$parents) > 0) {
+      for (j in 1:length(ni$parents)) {
+        x  <- ni$position # coords of ni
+        pj <- ni$parents[j]  # parent j (index)
+        y  <- nw$nodes[[pj]]$position # coords of pj
+        
+        u <- (x - y) / sqrt(sum( (x - y)^2 )) # unit vector from y to x
+        
+        x <- x - u*15
+        y <- y + u*15
+        
+        arrows( y[1],y[2],x[1],x[2],length=.25, lwd = 2)
+      }
+    }
+  }
+}
+
+
+FUNCTION_draw.network <- function(nw, yr = c(0,350), xr = c(0,350)) {  
+  
+  FUNCTION_plot.network(nw)
+  
+  xc <- mean(xr)
+  yc <- mean(yr)
+  
+  
+  mode <- "Add"
+  
+  newnet <- nw
+  quit   <- FALSE
+  unit   <- 2 * pi / nw$n
+  
+  nlist  <- names(nw$nodes)
+  while(!quit) {
+    
+    where <- t(matrix(unlist(
+      lapply(newnet$nodes, function(x)x$position)), nrow=2))
+    
+    buttonx <- 30
+    buttony <- 30
+    
+    # Coordinates of the ADD, REMOVE and STOP buttons.
+    where <- rbind(where, c(2 * xc + buttonx, 2 * yc + buttony))
+    where <- rbind(where, c(2 * xc + buttonx, 2 * yc))
+    where <- rbind(where, c(2 * xc + buttonx, 2 * yc - buttony))
+    
+    # Setting the buttons aspect
+    if (mode == "Add") {
+      bgadd  <- "blue4"
+      fgadd  <- "white"
+      
+      bgrem  <- "gray90"
+      fgrem  <- "black"
+      
+      bgstop <- "gray90"
+      fgstop <- "black"
+    }
+    
+    if (mode == "Remove") {
+      bgadd  <- "gray90"
+      fgadd  <- "black"
+      
+      bgrem  <- "blue4"
+      fgrem  <- "white"
+      
+      bgstop <- "gray90"
+      fgstop <- "black"
+    }
+    
+    if (mode == "Stop") {
+      bgadd  <- "gray90"
+      fgadd  <- "black"
+      
+      bgrem  <- "gray90"
+      fgrem  <- "black"
+      
+      bgstop <- "blue4"
+      fgstop <- "white"
+    }
+    
+    # Ploting the ADD, REMOVE and STOP buttons.
+    symbols(2 * xc + buttonx, 2 * yc + buttony,
+            rectangles = matrix(c(3,1),1), add =T, bg = bgadd)
+    text(2*xc + buttonx, 2 * yc + buttony, "Add", col = fgadd)
+    
+    symbols(2 * xc + buttonx, 2 * yc,
+            rectangles = matrix(c(3,1),1), add = T, bg = bgrem)
+    text(2 * xc + buttonx, 2 * yc, "Remove", col = fgrem)
+    
+    symbols(2 * xc + buttonx, 2 * yc - buttony,
+            rectangles = matrix(c(3,1),1), add = T, bg = bgstop)
+    text(2 * xc + buttonx, 2 * yc - buttony, "Stop", col = fgstop)
+    
+    
+    # Reading the position of the pointer when the mouse is pressed. 
+    # It then searches the closest coordinates given in x and y.
+    from <- identify(where[,1], where[,2], rep("", nw$n + 3), n = 1)
+    
+    # If user presses the ADD button.
+    if (from == (nw$n + 1)) {
+      mode <- "Add"
+      next
+    }
+    
+    # If user presses the REMOVE button.
+    if (from == (nw$n + 2)) {
+      mode <- "Remove"
+      next
+    }
+    
+    # If user presses the STOP button. 
+    if (from == (nw$n + 3)) break
+    
+    
+    # Reading the position of the pointer when the mouse is pressed. 
+    # It then searches the closest coordinates given in x and y.
+    to <- identify(where[,1], where[,2], rep("", nw$n + 3), n = 1)
+    
+    # If user presses the ADD button.
+    if (from == (nw$n + 1)) {
+      mode <- "Add"
+      next
+    }
+    
+    # If user presses the REMOVE button.
+    if (from == (nw$n + 2)) {
+      mode <- "Remove"
+      next
+    }
+    
+    # If user presses the STOP button. 
+    if (from == (nw$n + 3)) break
+    
+    
+    if (mode == "Add") {
+      tempnet <- AddArrow(newnet, from , to)
+    } else if (mode == "Remove") {
+      tempnet <- RemoveArrow(newnet, from , to)
+    }
+    
+    if (length(tempnet) > 0) {
+      if (!cycletest(tempnet)) {
+        newnet <- tempnet
+      } else {
+        print(cat("\n\nYou created a cycle. Try again!\n"))
+      }
+    } 
+    
+    FUNCTION_plot.network(newnet)
+  }
+  
+  FUNCTION_plot.network(newnet)
+  
+  return(newnet)
+}
+
+
   
 FUNCTION_graphical.model <- function() {    
   # Creates a Bayesian Network graphical model
@@ -867,15 +1133,12 @@ FUNCTION_graphical.model <- function() {
   cat("\n\n\nInstructions:\n
       - A empty graph will be drawn. You will specify a Bayesian Network 
           through a point and click interface;
-      - To insert an arc from the node 'A' to the node 'B', first click on the
-          'ADD' button and then click on node 'A' after click on node 'B';
+      - To insert an arc from the node 'A' to the node 'B', first check if the
+          'ADD' button is activated. Then click on node 'A' and after click on node 'B';
       - To remove this arc, first click on 'REMOVE' button in the topright box,
           now you may remove the arc clicking on node 'A' and then on node 'B';
-      - The button 'MOVE' can be used to change the nodes positions 
-          inside the plot area;
-      - If you insert an arc and create a cycle, 
-          the program will not draw this arc;
-      - When the graph is finished, check if it is correct and click 'STOP';
+      - The program will not draw an arc if you create a cycle;
+      - When your graph is done, check if it is correct and click 'STOP' button;
       - Please, always click ON the letters;\n\n")
   
   target.var <- eBayNeRDinfo$target.variable$name
@@ -903,13 +1166,15 @@ FUNCTION_graphical.model <- function() {
   eval(parse(text=paste("all.variables <- data.frame(",
                         paste(names.var," = 0", sep="", collapse=", "), ")",
                         sep="")))
+  
   ok <- F
   while (ok == F) {
+    net <- FUNCTION_create.network(all.variables)
     cat("\n 
         Please, specify the network graph model... \n\n")
     
     # Building a empty network. The user must to draw the arcs
-    nw <- network(all.variables, specifygraph=T, doprob=F)
+    net <- FUNCTION_draw.network(net)
     
     is.it.ok <- readline(cat("\n\n\nDo you want to use this DAG?",
                              "(y-Yes ; n-No): "))
@@ -919,7 +1184,7 @@ FUNCTION_graphical.model <- function() {
       if ((is.it.ok == "n") | (is.it.ok == "N")) {
         ok <- F
         graphics.off()
-        rm(nw)
+        rm(net)
       } else {
         cat("\n\nInvalid option!\n\n")          
       }
@@ -930,12 +1195,12 @@ FUNCTION_graphical.model <- function() {
   cat("\n\nRecording entered information... (please wait)\n\n")
       
   # bnlearn-deal package integration
-  nw2 <- bnlearn::model2network(deal::modelstring(nw))
+  net.str <- bnlearn::model2network(deal::modelstring(net))
   
   # Step 4 corresponds to the entered BN graphical model    
   eBayNeRDinfo$step.completed <- 0:4 
   # Saving the Bayesian Network model
-  eBayNeRDinfo$graph.model <- nw2
+  eBayNeRDinfo$graph.model <- net.str
   # Save the eBayNeRDinfo file inside the current working folder
   save(eBayNeRDinfo,file="eBayNeRDinfo.RData") 
   # Loading eBayNeRDinfo file
