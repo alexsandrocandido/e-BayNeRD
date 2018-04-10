@@ -952,35 +952,36 @@ RemoveArrow <- function(nw, j, i) {
 }
 
 
-FUNCTION_plot.network <- function(nw) {
-  
-  par(mar = c(2, 2, 1, 1))
+FUNCTION_plot.network <- function(nw) {  
+  par(mar = c(2, 2, 2, 1))
   plot(0, 0, xlim = c(0, 400), ylim = c(0, 400), type = "n", axes = F,
-       xlab = "", ylab = "")
+       xlab = "", ylab = "", main = "Define the variables relationship", adj = 0)
   
-  ## show nodes
+  
   for (i in 1:nw$n) {
+    # Plotting nodes
     points(nw$nodes[[i]]$position[1], nw$nodes[[i]]$position[2],
            cex = 6, pch = 19, col = "darkcyan")
     text(nw$nodes[[i]]$position[1], nw$nodes[[i]]$position[2],
          nw$nodes[[i]]$name, col = "black", cex = 1.5)
-  }
-  
-  ##< show arrows
-  for (i in 1:nw$n) {
-    ni <- nw$nodes[[i]]    # node i
-    if (length(ni$parents) > 0) {
-      for (j in 1:length(ni$parents)) {
-        x  <- ni$position # coords of ni
-        pj <- ni$parents[j]  # parent j (index)
-        y  <- nw$nodes[[pj]]$position # coords of pj
+    
+    # Ploting arrowns
+    nodej <- nw$nodes[[i]]
+    n <- length(nodej$parents)
+    if (n > 0){
+      for (l in 1:n){
+        pos.nj <- nodej$position # node coordinates
+        pa.id  <- nodej$parents[l] # index of the l'th parent 
+        pos.pa <- nw$nodes[[pa.id]]$position # parent coordinates
         
-        u <- (x - y) / sqrt(sum( (x - y)^2 )) # unit vector from y to x
+        # Unit vector from pos.pa to pos.nj
+        unit <- (pos.nj - pos.pa) / sqrt(sum( (pos.nj - pos.pa)^2 )) 
         
-        x <- x - u*15
-        y <- y + u*15
+        pos.nj <- pos.nj - unit * 15
+        pos.pa <- pos.pa + unit * 15
         
-        arrows( y[1],y[2],x[1],x[2],length=.25, lwd = 2)
+        arrows( pos.pa[1], pos.pa[2], pos.nj[1], pos.nj[2],
+                length=.2, col="black", lwd = 2)
       }
     }
   }
