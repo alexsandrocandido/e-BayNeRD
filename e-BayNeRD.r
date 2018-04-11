@@ -916,7 +916,7 @@ FUNCTION_create.network <- function(df, yr = c(0,350), xr = c(0,350) )  {
 AddArrow <- function(nw, j, i) {
   
   if (i > nw$n | i == j){
-    print(cat("\n\nThis arrow can be created!!\n"))
+    print(cat("\n\nThis arrow can't be created!!\n"))
     return(nw = NULL)
   }
   
@@ -926,7 +926,7 @@ AddArrow <- function(nw, j, i) {
     return(nw = NULL)
   } # Checking if i is parent of j.
   else if (!is.na(match(i, nw$nodes[[j]]$parents))) {
-    print(cat("\n\nThis arrow can be created!!\n"))
+    print(cat("\n\nThis arrow can't be created!!\n"))
     return(nw = NULL)
   }
   
