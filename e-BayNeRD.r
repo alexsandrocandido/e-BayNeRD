@@ -1087,19 +1087,19 @@ FUNCTION_draw.network <- function(nw, yr = c(0,350), xr = c(0,350)) {
     to <- identify(where[,1], where[,2], rep("", nw$n + 3), n = 1)
     
     # If user presses the ADD button.
-    if (from == (nw$n + 1)) {
+    if (to == (nw$n + 1)) {
       mode <- "Add"
       next
     }
     
     # If user presses the REMOVE button.
-    if (from == (nw$n + 2)) {
+    if (to == (nw$n + 2)) {
       mode <- "Remove"
       next
     }
     
     # If user presses the STOP button. 
-    if (from == (nw$n + 3)) break
+    if (to == (nw$n + 3)) break
     
     
     if (mode == "Add") {
