@@ -1037,17 +1037,6 @@ FUNCTION_draw.network <- function(nw, yr = c(0,350), xr = c(0,350)) {
       fgstop <- "black"
     }
     
-    if (mode == "Stop") {
-      bgadd  <- "gray90"
-      fgadd  <- "black"
-      
-      bgrem  <- "gray90"
-      fgrem  <- "black"
-      
-      bgstop <- "blue4"
-      fgstop <- "white"
-    }
-    
     # Ploting the ADD, REMOVE and STOP buttons.
     symbols(2 * xc + buttonx, 2 * yc + buttony,
             rectangles = matrix(c(3,1),1), add =T, bg = bgadd)
