@@ -859,12 +859,10 @@ FUNCTION_read.context.variables <- function(subfolder = T) {
   invisible(gc())
   invisible(rm(list=ls()))
 }
-
  
 
 FUNCTION_create.node <- function(idx, parents, name=paste(idx), position=c(0,0)) {
-  ## creator for class 'node'
-  
+  ## This function is based on 'node' function from deal package.  
   ## idx:      The unique index of the node
   ## name:     The plotted name
   ## parents:  Vector with indices of parents
@@ -876,105 +874,142 @@ FUNCTION_create.node <- function(idx, parents, name=paste(idx), position=c(0,0))
   nd$parents  <- parents
   nd$position <- position
   
-  class(nd)  <- "node"
-  
   return(nd)
 }
 
 
 FUNCTION_create.network <- function(df, yr = c(0,350), xr = c(0,350) )  {
-  ## creator for class 'network'
-  
-  
+  ## This function is based on 'network' function from deal package.
+    
   if (length(dim(df)) < 1) 
     stop("It can't handle with networks with one node.\n")
   
-  nw   <- list()
-  nw$n <- ncol(df)  ## df must have at least 2 columns...
-  
-  
-  nw$nodes <- list()
-  unit <- 2 * pi / nw$n
+  nw <- list()
+  n  <- ncol(df)  
+    
+  nw <- list()
+  unit <- 2 * pi / n
   xc <- mean(xr)
   yc <- mean(yr)
   
-  for (i in 1:nw$n) {
+  for (i in 1:n) {
     pos <- c(cos(unit * i + pi/4), sin(unit * i + pi/4)) * xc * .9 + c(xc, yc)
     
-    nw$nodes[[i]] <- FUNCTION_create.node(idx = i, parents = c(),
-                                          name = names(df)[i], position = pos)
-  }
-  
-  names(nw$nodes) <- names(df)
-  
-  class(nw) <- "network"
+    nw[[i]] <- FUNCTION_create.node(idx = i, parents = c(),
+                                    name = names(df)[i], position = pos)
+  }  
+  names(nw) <- names(df)
   
   return(nw)
 }
 
 
 AddArrow <- function(nw, j, i) {
+  ## This function is based on 'insert' function from deal package.
   
-  if (i > nw$n | i == j){
+  n <- length(nw)
+  if (i > n | i == j){
     print(cat("\n\nThis arrow can't be created!!\n"))
     return(nw = NULL)
   }
   
   # Checking if j is parent of i.
-  else if (!is.na(match(j, nw$nodes[[i]]$parents))) {
+  else if (!is.na(match(j, nw[[i]]$parents))) {
     print(cat("\n\nThis arrow already exist!!\n"))
     return(nw = NULL)
   } # Checking if i is parent of j.
-  else if (!is.na(match(i, nw$nodes[[j]]$parents))) {
+  else if (!is.na(match(i, nw[[j]]$parents))) {
     print(cat("\n\nThis arrow can't be created!!\n"))
     return(nw = NULL)
   }
   
   # Adding j as parent of i.
-  nw$nodes[[i]]$parents <- sort(c(nw$nodes[[i]]$parents, j))
+  nw[[i]]$parents <- sort(c(nw[[i]]$parents, j))
   return(nw)
 }
 
 
 RemoveArrow <- function(nw, j, i) {
-  if (i > nw$n | i == j){
+  ## This function is based on 'remover' function from deal package.
+  n <- length(nw)
+  if (i > n | i == j){
     return(nw = NULL)
   }
   
-  parents <- nw$nodes[[i]]$parents
+  parents <- nw[[i]]$parents
   
   if (!length(intersect(parents, j)) > 0) {
     print(cat("\n\nThere's no arrow there!\n"))
     return(nw = NULL)
   } else {
-    nw$nodes[[i]]$parents <- setdiff(nw$nodes[[i]]$parents, j)
+    nw[[i]]$parents <- setdiff(nw[[i]]$parents, j)
   }
   
   return(nw)
 }
 
 
+FindLeaf <- function(nw){
+  ## This function is based on 'findleaf' function from deal package.
+  n <- length(nw)
+  jump <- FALSE
+  for (i in 1:n) {
+    for (j in 1:n) {
+      res <- match(nw[[i]]$idx, nw[[j]]$parents)
+      if (!is.na(res)) {
+        jump <- TRUE
+        break
+      }
+    }
+    if (!jump) 
+      return(i)
+    jump <- FALSE
+  }
+  res <- 0
+  return(res)
+}
+
+
+CycleTest <- function(nw) {
+  ## This function is based on 'cycletest' function from deal package.
+  n <- length(nw)
+  if (n == 1) {
+    return(FALSE)
+  }
+  else {
+    res <- FindLeaf(nw)
+    if (res == 0) {
+      return(TRUE)
+    }
+    else {
+      nw <- nw[-res]
+      CycleTest(nw)
+    }
+  }
+}
+                        
+                        
 FUNCTION_plot.network <- function(nw) {  
   par(mar = c(2, 2, 2, 1))
   plot(0, 0, xlim = c(0, 400), ylim = c(0, 400), type = "n", axes = F,
        xlab = "", ylab = "", main = "Define the variables relationship", adj = 0)
   
-  
-  for (i in 1:nw$n) {
+  n <- length(nw)
+  for (i in 1:n) {
     # Plotting nodes
-    points(nw$nodes[[i]]$position[1], nw$nodes[[i]]$position[2],
+    points(nw[[i]]$position[1], nw[[i]]$position[2],
            cex = 6, pch = 19, col = "darkcyan")
-    text(nw$nodes[[i]]$position[1], nw$nodes[[i]]$position[2],
-         nw$nodes[[i]]$name, col = "black", cex = 1.5)
+    text(nw[[i]]$position[1], nw[[i]]$position[2],
+         nw[[i]]$name, col = "black", cex = 1.5)
     
     # Ploting arrowns
-    nodej <- nw$nodes[[i]]
-    n <- length(nodej$parents)
-    if (n > 0){
-      for (l in 1:n){
+    nodej <- nw[[i]]
+    np <- length(nodej$parents)
+    if (np > 0){
+      for (l in 1:np){
         pos.nj <- nodej$position # node coordinates
         pa.id  <- nodej$parents[l] # index of the l'th parent 
-        pos.pa <- nw$nodes[[pa.id]]$position # parent coordinates
+        pos.pa <- nw[[pa.id]]$position # parent coordinates
         
         # Unit vector from pos.pa to pos.nj
         unit <- (pos.nj - pos.pa) / sqrt(sum( (pos.nj - pos.pa)^2 )) 
@@ -991,15 +1026,17 @@ FUNCTION_plot.network <- function(nw) {
 
 
 FUNCTION_draw.network <- function(nw, yr = c(0,350), xr = c(0,350)) {  
+  ## This function is based on 'drawnetwork' function from deal package.
   
   FUNCTION_plot.network(nw)
   
   xc <- mean(xr)
   yc <- mean(yr)
+  n  <- length(nw)
   
   newnet <- nw
   
-  where <- t(matrix(unlist(lapply(newnet$nodes, function(x)x$position)), nrow=2))
+  where <- t(matrix(unlist(lapply(newnet, function(x)x$position)), nrow=2))
     
   buttonx <- 30
   buttony <- 30
@@ -1053,42 +1090,41 @@ FUNCTION_draw.network <- function(nw, yr = c(0,350), xr = c(0,350)) {
     
     # Reading the position of the pointer when the mouse is pressed. 
     # It then searches the closest coordinates given in x and y.
-    from <- identify(where[,1], where[,2], rep("", nw$n + 3), n = 1)
+    from <- identify(where[,1], where[,2], rep("", n + 3), n = 1)
     
     # If user presses the ADD button.
-    if (from == (nw$n + 1)) {
+    if (from == (n + 1)) {
       mode <- "Add"
       next
     }
     
     # If user presses the REMOVE button.
-    if (from == (nw$n + 2)) {
+    if (from == (n + 2)) {
       mode <- "Remove"
       next
     }
     
     # If user presses the STOP button. 
-    if (from == (nw$n + 3)) break
-    
-    
+    if (from == (n + 3)) break
+        
     # Reading the position of the pointer when the mouse is pressed. 
     # It then searches the closest coordinates given in x and y.
-    to <- identify(where[,1], where[,2], rep("", nw$n + 3), n = 1)
+    to <- identify(where[,1], where[,2], rep("", n + 3), n = 1)
     
     # If user presses the ADD button.
-    if (to == (nw$n + 1)) {
+    if (to == (n + 1)) {
       mode <- "Add"
       next
     }
     
     # If user presses the REMOVE button.
-    if (to == (nw$n + 2)) {
+    if (to == (n + 2)) {
       mode <- "Remove"
       next
     }
     
     # If user presses the STOP button. 
-    if (to == (nw$n + 3)) break
+    if (to == (n + 3)) break
     
     
     if (mode == "Add") {
@@ -1098,7 +1134,7 @@ FUNCTION_draw.network <- function(nw, yr = c(0,350), xr = c(0,350)) {
     }
     
     if (length(tempnet) > 0) {
-      if (!cycletest(tempnet)) {
+      if (!CycleTest(tempnet)) {
         newnet <- tempnet
       } else {
         print(cat("\n\nYou created a cycle. Try again!\n"))
@@ -1111,6 +1147,24 @@ FUNCTION_draw.network <- function(nw, yr = c(0,350), xr = c(0,350)) {
   FUNCTION_plot.network(newnet)
   
   return(newnet)
+}
+
+
+ModelString <- function(nw){
+  ## This function is based on 'modelstring' function from deal package.
+  res <- ""
+  n   <- length(nw)
+  g <- function(x) x$name
+  for (j in 1:n) {
+    nd <- nw[[j]]
+    res <- paste(res, "[", nd$name, sep = "")
+    if (length(nd$parents) > 0) {
+      res <- paste(res, "|", paste(unlist(lapply(nw[nd$parents], 
+                                                 g)), collapse = ":"), sep = "")
+    }
+    res <- paste(res, "]", sep = "")
+  }
+  res
 }
 
 
@@ -1181,7 +1235,7 @@ FUNCTION_graphical.model <- function() {
   cat("\n\nRecording entered information... (please wait)\n\n")
   
   # bnlearn-deal package integration
-  net.str <- bnlearn::model2network(deal::modelstring(net))
+  net.str <- bnlearn::model2network(ModelString(net))
   
   # Step 4 corresponds to the entered BN graphical model    
   eBayNeRDinfo$step.completed <- 0:4 
