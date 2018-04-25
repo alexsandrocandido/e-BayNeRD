@@ -3061,7 +3061,6 @@ FUNCTION_instructions <- function() {
       Visit https://github.com/alexsandrocandido/e-BayNeRD\n\n")
 }
 
-
 FUNCTION_load.package <- function(name.of.package) {
   # Loads/Downloads the needed packages
   packages <- installed.packages()[, 'Package']
@@ -3076,7 +3075,6 @@ FUNCTION_load.package <- function(name.of.package) {
             sep=""))))
   }
 }
-
 
 FUNCTION_working.folder <- function() {
   # Defines de working folder.
@@ -3106,15 +3104,6 @@ FUNCTION_working.folder <- function() {
   }
 }
 
-
-FUNCTION_clear.console  <-  function() {     
-  # Clears the console.
-  wsh <- COMCreate("Wscript.Shell") 
-  wsh$SendKeys("\014") 
-  invisible(wsh) 
-} 
-
-
 FUNCTION_before.beginning <- function() {    
   # First function to be run.
   # It installs all the needed packages and 
@@ -3123,7 +3112,7 @@ FUNCTION_before.beginning <- function() {
       Installing/Loading the needed packages... (please wait)\n\n\n")
   
       
-  # Installing the needed packages.
+  # Installing needed packages.
   if ('RBGL' %in% installed.packages()[,'Package'] ){
     require('RBGL')
   } else {
@@ -3131,7 +3120,6 @@ FUNCTION_before.beginning <- function() {
     biocLite('RBGL')
     require('RBGL')
   }
-  invisible(FUNCTION_load.package("RDCOMClient")); 
   invisible(FUNCTION_load.package("rgdal"))    
   invisible(FUNCTION_load.package("raster"))
   invisible(FUNCTION_load.package("bnlearn"))
@@ -3146,8 +3134,8 @@ FUNCTION_before.beginning <- function() {
   invisible(FUNCTION_load.package("bigmemory"))
   #invisible(FUNCTION_load.package("ggplot2"))
   
-  # Clearing the console.
-  FUNCTION_clear.console()
+  # Clearing console.
+  cat("\014")  
   # Writing the heading of program.
   FUNCTION_write.the.heading.of.the.program()  
   # Defining the working folder.
@@ -3228,9 +3216,7 @@ FUNCTION_before.beginning <- function() {
 
 options(scipen=10000,  # For non scientific notation of big or small numbers
         warn=-1)       # For not printing warning messages
-
-invisible(FUNCTION_load.package("RDCOMClient")); 
-FUNCTION_clear.console();
+cat("\014")  # Clearing console
 FUNCTION_write.the.heading.of.the.program();
 
 if (Sys.info()[[1]] == "Windows") {
