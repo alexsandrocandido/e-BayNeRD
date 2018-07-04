@@ -2690,7 +2690,7 @@ FUNCTION_find.bestTPV<-function(n.slices = 101, criterion.number = 1) {
   temp <- matrix(0, ncol = 2, nrow = 2)
   for (i in 1:n.slices)
   {
-    class.map <- raster(PB)
+    class.map <- PB
     class.map[ PB <  result$prob.value[i] ] <- 0
     class.map[ PB >= result$prob.value[i] ] <- 1
     
