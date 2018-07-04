@@ -2578,17 +2578,17 @@ FUNCTION_sample.size <- function(alfa=0.05, ref = ref)
     }
     
 
+
+
 FUNCTION_find.bestTPV<-function(n.slices = 101, criterion.number = 1) {
   
   n <- length(eBayNeRDinfo$target.variable$classes$class.target)
   if (n > 1) {
-    stop(cat("\n\n\n Ops! This method has not yet been inplemented\n",
-             "for target variables with more than two classes (absence and presense)"))
-  } else {
-    
-  }
- 
-   
+    stop("This method has not yet been inplemented\n",
+         "for target variables with more than two classes (absence and presense)")
+  } 
+  
+  
   target.class.number <- 
     as.numeric(eBayNeRDinfo$ref.for.test$classes$class.target)
   
@@ -2604,9 +2604,9 @@ FUNCTION_find.bestTPV<-function(n.slices = 101, criterion.number = 1) {
   if ( (minValue(PB) < 0) | (maxValue(PB) > 1)) 
     cat ("\n\nATENTION:\n",
          "Your Probability Band has values of probability\n",
-          "outside of the interval [0,1].\n\n")
+         "outside of the interval [0,1].\n\n")
   
- 
+  
   result <- data.frame(slice.level = 1:n.slices, 
                        prob.value = seq(0,1,(1-0) / (n.slices-1)),
                        n.pixels.target = -1, difference.with.ref = -1,
@@ -2617,13 +2617,13 @@ FUNCTION_find.bestTPV<-function(n.slices = 101, criterion.number = 1) {
   #asking about sampling
   cat("\n")
   ok<-F
- 
-   while(ok==F)
+  
+  while(ok==F)
   {
     is.it.ok<-readline("Would you like to make a sampling for accuracy assessment? (y-Yes ; n-No): ")
     if ((is.it.ok=="y")||(is.it.ok=="Y")) {ok<-T;sampling<-T} else
       if ((is.it.ok=="n")||(is.it.ok=="N")) {ok<-T;sampling<-F} else cat("\n\nInvalid option!\n\n")
-  };rm(ok)
+  }
   
   if(sampling==T)
   {
@@ -2665,14 +2665,13 @@ FUNCTION_find.bestTPV<-function(n.slices = 101, criterion.number = 1) {
     {
       trash.sample <- sample(x = which(getValues(ref) == 
                                          sample.size.computations$ID[i]),
-                           size = sample.size, replace = F)
+                             size = sample.size, replace = F)
       ref2[trash.sample] <- ref[trash.sample]
       rm(trash.sample)
     }
     ref <- ref2
     rm(ref2)
   }
-  invisible(gc())
   
   totalnpixels <- length(which(!is.na(getValues(ref))))
   
@@ -2732,31 +2731,16 @@ FUNCTION_find.bestTPV<-function(n.slices = 101, criterion.number = 1) {
     criterion<-"value entered manually"
     
     ok2<-F
-    while(ok2==F)
-    {
-      #drawing the accuracy indeces as function of the TPV
-      #        if(Sys.info()[[1]]=="Windows") windows(restoreConsole=T) else dev.new()
-      dev.new()
-      plot(result$prob.value,result$prob.value,type="n",xlim=c(0,1.5),ylim=c(0,1),axes=F,main=paste("Criterion:\n",criterion,sep=""),xlab="Target Probability Value",ylab="Index Value")
-      axis(2,seq(0,1,0.1),round(seq(0,1,0.1),2))
-      axis(1,seq(0,1,0.1),round(seq(0,1,0.1),2))
-      box()
-      points(result$prob.value,result$sensitivity,type="l",lty=1,col=2,add=T)
-      points(result$prob.value,result$specificity,type="l",lty=1,col=3,add=T)
-      points(result$prob.value,result$accuracy,type="l",lty=1,col=4,add=T)
-      points(result$prob.value,result$kappa,type="l",lty=1,col=5,add=T)
-      legend(x=1.02,y=0,xjust=0,yjust=0,lty=1,legend=c("Sensitivity","Specificity","Accuracy","Kappa"),col=2:5)
-      
+    while(ok2==F) {
       ok<-F
-      while(ok==F)
-      {
+      while(ok==F) {
         cat("\n\n")
         prob.read<-readline("Enter the best-TPV (a value between 0 and 1): ")
         prob.read<-as.numeric(prob.read)
         if((is.na(prob.read)) || (prob.read<0) || (prob.read>1))
           cat("\n\nInvalid value!\n") else ok<-T
       }
-      rm(ok)
+      cat("\nPlease wait...\n")
       
       result2 <- data.frame(slice.level = 1, prob.value = prob.read, 
                             n.pixels.target = -1, difference.with.ref = -1,
@@ -2769,7 +2753,7 @@ FUNCTION_find.bestTPV<-function(n.slices = 101, criterion.number = 1) {
       
       bestTPV <- 1
       
-      class.map <- raster(PB)
+      class.map <- PB
       class.map[ PB <  result2$prob.value[1] ] <- 0
       class.map[ PB >= result2$prob.value[1] ] <- 1
       
@@ -2782,26 +2766,22 @@ FUNCTION_find.bestTPV<-function(n.slices = 101, criterion.number = 1) {
       temp[2,2] <- length(which( (getValues(ref) != target.class.number) & 
                                    (getValues(class.map) == 0)))
       
-      result2$pixels.inclusion.error[i] <- temp[1,2]
-      result2$pixels.omission.error[i]  <- temp[2,1]
+      result2$pixels.inclusion.error <- temp[1,2]
+      result2$pixels.omission.error  <- temp[2,1]
       
-      result2$sensitivity[i] <- temp[1,1]/sum(temp[,1])
-      result2$specificity[i] <- temp[2,2]/sum(temp[,2])
+      result2$sensitivity <- temp[1,1]/sum(temp[,1])
+      result2$specificity <- temp[2,2]/sum(temp[,2])
       
-      result2$n.pixels.target[i]     <- length(which(getValues(class.map)==1))
-      result2$difference.with.ref[i] <- 
-        (result2$n.pixels.target[i] - n.pixels.target) / n.pixels.target
+      result2$n.pixels.target     <- length(which(getValues(class.map)==1))
+      result2$difference.with.ref <- 
+        (result2$n.pixels.target - n.pixels.target) / n.pixels.target
       
-      result$accuracy[i] <- (temp[1,1] + temp[2,2]) / sum(temp)
+      result2$accuracy <- (temp[1,1] + temp[2,2]) / sum(temp)
       
       temp.kappa <- FUNCTION_accuracy.index(confusion.matrix = temp, index="kappa")
-      result2$kappa[i]     <- temp.kappa$index.value
-      result2$kappa.var[i] <- temp.kappa$variance.index
+      result2$kappa     <- temp.kappa$index.value
+      result2$kappa.var <- temp.kappa$variance.index
       rm(temp.kappa)
-      
-      
-      lines(c(result2$prob.value[bestTPV],result2$prob.value[bestTPV]),c(0,1),col=1,lty=3)
-      text(x=(result2$prob.value[bestTPV]+0.015),y=0.02,label=paste("best-TPV = ",round(result2$prob.value[bestTPV]*100,2),"%",sep=""),col=1,pos=4)
       
       rm(temp)
       temp<-1
@@ -2810,8 +2790,12 @@ FUNCTION_find.bestTPV<-function(n.slices = 101, criterion.number = 1) {
       print(result2[,2:length(result2[1,])])
       cat("\n\n")
       is.it.ok<-readline("Are you sure about this value? (y-Yes ; n-No): ")
-      if ((is.it.ok=="y")||(is.it.ok=="Y")) {ok2<-T;cat("\n\nPlease wait...\n\n");invisible(flush.console())} else {ok2<-F;rm(temp,result2,bestTPV,prob.read,class.map)}
-      if(length(dev.list())>0) invisible(dev.off()) #closing the current graphic window
+      if ((is.it.ok=="y")||(is.it.ok=="Y")) {
+        ok2<-T
+      } else {
+        ok2 <- F
+        rm(temp,result2,bestTPV,prob.read,class.map)
+      }
     }
   } else
     if(criterion.number==1)
@@ -2876,45 +2860,46 @@ FUNCTION_find.bestTPV<-function(n.slices = 101, criterion.number = 1) {
   points(result$prob.value,result$specificity,type="l",lty=1,col=2, lwd=2)
   points(result$prob.value,result$accuracy,type="l",lty=1,col=3, lwd=2)
   points(result$prob.value,result$kappa,type="l",lty=1,col=4, lwd=2)
-  lines(c(result2$prob.value[bestTPV],result2$prob.value[bestTPV]),c(0,1),col=1,lty=3,lwd=2)
+  lines(c(result2$prob.value[bestTPV],result2$prob.value[bestTPV]),c(0,1),col='grey',lty=3,lwd=2)
   text(x=(result2$prob.value[bestTPV]+0.015),y=0.02,label=paste("best-TPV = ",round(result2$prob.value[bestTPV]*100,2),"%",sep=""),col=1,pos=4)
-  legend(x=1.1,y=0,xjust=0,yjust=0,lty=1,legend=c("Sensitivity","Specificity","Accuracy","Kappa"),col=1:4)
-  
+  legend(x=1.1,y=0,xjust=0,yjust=0,lty=1, lwd=2,legend=c("Sensitivity","Specificity","Accuracy","Kappa"),col=1:4)
   
   #computing about ROC curve
-  ROC.curve<-data.frame(area.under=-1,standard.deviation=-1)
-  y<-result$sensitivity
-  x<-1-result$specificity
+  y <- result$sensitivity
+  x <- 1-result$specificity
   temp.area<-0
   for (j in 2:n.slices)
     temp.area<-temp.area+((x[j-1]-x[j])*((y[j-1]+y[j])/2))
-  ROC.curve$area.under<-temp.area
-  ROC.curve$standard.deviation<-9999 #not implemented yet!
+  ROC.curve <- temp.area
   
   #drawing the ROC curve
   dev.new()
-  plot(x,y,type="l",col=2,xlim=c(0,1),ylim=c(0,1),axes=F,xlab="Specificity",ylab="Sensitivity",main="ROC curve",sub=paste("Criterion: ",criterion,sep=""), lwd=2)
+  plot(x,y,type="l",col=2,xlim=c(0,1),ylim=c(0,1),axes=F,
+       xlab="Specificity",ylab="Sensitivity",
+       main="ROC curve",sub=paste("Criterion: ",criterion,sep=""), lwd=2)
   axis(2)
   axis(1,seq(0,1,0.1),round(seq(1,0,-0.1),2))
   box()
   
   #this is necessary if criterion.numeber==0
-  y<-result2$sensitivity
-  x<-1-result2$specificity
+  if(criterion.number == 0) {
+    y <- result2$sensitivity
+    x <- 1-result2$specificity
+  }
   
   lines(c(0,1),c(0,1),col="grey",lty=1,type="l", lwd=1.5)
-  points(c(x[bestTPV],x[bestTPV]),c(y[bestTPV],y[bestTPV]),col=1,type="p", lwd=2)
+  points(c(x[bestTPV],x[bestTPV]),c(y[bestTPV],y[bestTPV]),col=1, lwd=2)
   lines(c(x[bestTPV],x[bestTPV]),c(0,y[bestTPV]),lty=2,col=1)
   lines(c(0,x[bestTPV]),c(y[bestTPV],y[bestTPV]),lty=2,col=1)
-  text(x=x[bestTPV]+0.03,y=y[bestTPV],label=paste("best-TPV = ",round(result2$prob.value[bestTPV]*100,2),"%",sep=""),col=1,pos=4)
-  text(x=0,y=y[bestTPV]+0.02,label=paste(round(result2$sensitivity[bestTPV]*100,2),"%",sep=""),col="black",pos=4)
-  text(x=x[bestTPV],y=0.05,label=paste(round(result2$specificity[bestTPV]*100,2),"%",sep=""),col="black",pos=4)
-  legend(x=0.65, y=0, xjust=0,yjust=0,lty=1,legend=c("ROC Curve","Random Guess"),col=c("red","grey"))
-  text(x=0.75, y=0.18, paste("AUC = ", round(ROC.curve$area.under,3)*100, "%", sep=""))
+  text(x=x[bestTPV],y=y[bestTPV]-.02,label=paste("best-TPV = ",round(result2$prob.value[bestTPV]*100,2),"%",sep=""),col=1,pos=4)
+  text(x=-0.05,y=y[bestTPV]+0.03,label=paste(round(result2$sensitivity[bestTPV]*100,2),"%",sep=""),col="black",pos=4)
+  text(x=x[bestTPV],y=0,label=paste(round(result2$specificity[bestTPV]*100,2),"%",sep=""),col="black",pos=4)
+  legend(x=0.65, y=0, xjust=0,yjust=0,lty=1,lwd=2,legend=c("ROC Curve","Random Guess"),col=c("red","grey"))
+  text(x=0.75, y=0.18, paste("AUC = ", round(ROC.curve,3)*100, "%", sep=""))
   
-  cat("\n\n\n Writing the final map (finalmap.tif)...\n\n")
+  cat("\n\n\n Writing the final thematic map (finalmap.tif)...\n\n")
   class.map <- PB
-  class.map[ PB <  result2$prob.value[1] ] <- 0
+  class.map[ PB <  result2$prob.value[bestTPV] ] <- 0
   writeRaster(class.map, filename = "./e-BayNeRD Outcomes/finalmap.tif", 
               format = 'GTiff', overwrite=T)
   
@@ -2938,11 +2923,10 @@ FUNCTION_find.bestTPV<-function(n.slices = 101, criterion.number = 1) {
   load("eBayNeRDinfo.RData") #loading BayNeRDinfo file
   eBayNeRDinfo <<- eBayNeRDinfo
   
-
   
   cat("\n\nDone! Thank you for unsing e-BayNeRD. I would appreciate if you write an email to\n",
       "alexsandro.silva@inpe.br telling me your experiences with e-BayNeRD.\n\n",
-      "Best regards,\nAlexsandro Cândido de Oliveira Silva\n\n")
+      "Best regards,\nAlexsandro CÃ¢ndido de Oliveira Silva\n\n")
   
   invisible(gc())
 } 
