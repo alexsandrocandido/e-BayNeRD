@@ -2912,10 +2912,9 @@ FUNCTION_find.bestTPV<-function(n.slices = 101, criterion.number = 1) {
   legend(x=0.65, y=0, xjust=0,yjust=0,lty=1,legend=c("ROC Curve","Random Guess"),col=c("red","grey"))
   text(x=0.75, y=0.18, paste("AUC = ", round(ROC.curve$area.under,3)*100, "%", sep=""))
   
-  cat("\n\n\n Writing the final thematic map (finalmap.tif)...\n\n")
-  class.map <- raster(PB)
+  cat("\n\n\n Writing the final map (finalmap.tif)...\n\n")
+  class.map <- PB
   class.map[ PB <  result2$prob.value[1] ] <- 0
-  class.map[ PB >= result2$prob.value[1] ] <- 1
   writeRaster(class.map, filename = "./e-BayNeRD Outcomes/finalmap.tif", 
               format = 'GTiff', overwrite=T)
   
