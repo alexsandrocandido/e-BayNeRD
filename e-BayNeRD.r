@@ -1,5 +1,4 @@
 
-
 #-----------------------------------------------------------------------------#
 #           e-BayNeRD - Enhanced BAYesian NEtworks for Raster Data            #
 #-----------------------------------------------------------------------------#
@@ -8,22 +7,29 @@
 #                     Alexsandro Candido de Oliveira Silva                    #
 #                           alexsandro.silva@inpe.br                          #
 #            National Institute for Space Research (INPE) - Brazil            #
+#                                                                             #
+#                                                                             #
+#           The e-BayNeRD is an enhanced version of the BayNeRD model,        #
+#                 which was developed by Mello et al (2013).                  #
 #-----------------------------------------------------------------------------#
-
 
 
 FUNCTION_write.the.heading.of.the.program <- function() {
   # Writes the heading of the program.
   cat("\n\n
-      _____________________________________________________________
-
-         e-BayNeRD - ENHANCED BAYESIAN NETWORKS FOR RASTER DATA
-                              Implemented by
-                   Alexsandro Cândido de Oliveira Silva
-                        alexsandro.silva@inpe.br
-            National Institute for Space Research (INPE) - Brazil
-                            
-      ____________________________________________________________
+      ________________________________________________________________
+      
+      e-BayNeRD - ENHANCED BAYESIAN NETWORKS FOR RASTER DATA
+      Implemented by
+      Alexsandro Candido de Oliveira Silva - alexsandro.silva@inpe.br
+      National Institute for Space Research (INPE) - Brazil
+      
+      -----
+      
+      The e-BayNeRD is an enhenced version of the BayNeRD model,
+      which was developed by Mello et al (2013): 
+      https://doi.org/10.3390/rs5115999.
+      ________________________________________________________________
       \n\n")
 }
 
@@ -33,12 +39,14 @@ FUNCTION_how.to.cite.the.program <- function() {
   cat("\n\n
       ___________________________________________________________________
       Please, cite the follow bibliography:    
-
-      SILVA, A. C. O.; FONSECA, L. M. G.; KORTING, T. S.. Bayesian network
-      model to predict areas for sugarcane expansion in Brazilian Cerrado. 
-      Revista Brasileira de Cartografia.  2017
-      (http://www.lsie.unb.br/rbc/index.php/rbc/article/view/1983).
-
+      
+      SILVA, A. C. O.; FONSECA, L. M. G.; KORTING, T. S.. 
+      Bayesian network model to predict areas for sugarcane expansion 
+      in Brazilian Cerrado. Brazilian Journal of Cartography (2017), 
+      Nº 69/5, Special Issue GEOINFO 2017: 857-867. Brazilian Society 
+      of Cartography, Geodesy, Photgrammetry and Remote Sense. 
+      ISSN: 1808-0936.
+      
       ___________________________________________________________________
       \n\n")
 }
@@ -51,7 +59,7 @@ FUNCTION_how.to.cite.the.program.bibtex <- function() {
       You can use the BibTeX entry for LaTeX users as:
 
       
-      }
+      
       ______________________________________________________________
       \n\n")
 }
