@@ -45,7 +45,15 @@ FUNCTION_how.to.cite.the.program <- function() {
       N. 69-5, Special Issue GEOINFO 2017, page 857-867. Brazilian Society
       of Cartography, Geodesy, Photgrammetry and Remote Sense.
       ISSN: 1808-0936.
-
+      
+      -----
+      
+      SILVA, A. C. O.; MELLO, M. P.; FONSECA, L. M. G.. Enhanced Bayesian 
+      Network for Raster Data (e-BayNeRD). In: Brazilian Symposium on 
+      Geoinformatics - GEOINFO, 2014, Campos do Jordão, SP, Brazil. 
+      Proceedings of the Brazilian Symposium on Geoinformatics - GEOINFO. 
+      São José dos Campos - SP: National Institute for Space Research (INPE), 
+      2014. v. 15. p. 73-83.
       ___________________________________________________________________
       \n\n")
 }
@@ -70,38 +78,27 @@ FUNCTION_eBayNeRD.R.menu.names <- function() {
   # B is for the first submenu
   #   B0 if there are no submenus in B
   #   B1 if there are submenus in B
-  menu.type <- c("A0","A1","B0",
-                 "A0","A0","A1","B0","B0",
-                 "A0","A0","A0","A0","A0",
-                 "A1","B0","B0","B0","B0","B0","B0","B0",
-                 "A0")
-  menu.disable.until.step <- c(0,0,0,0,1,2,2,2,3,4,5,5,6,0,7,7,7,7,7,7,7,0)
+  menu.type <- c("A0","A0", "A0",
+                 "A0","A1","B0","B0",
+                 "A0","A0","A0","A0","A0","A0", "A0")
+  menu.disable.until.step <- c(0,0,0,1,2,2,2,3,4,5,5,6,7,0)
   menu.name <- c("About",
-                 "How can I cite e-BayNeRD?",
-                 "The e-BayNeRD paper",
+                 "How to cite e-BayNeRD",
                  "Before beginning...",
-                 "Reading target variable (reference data for training)",
+                 "Reading target variable",
                  "Reading context variables",
-                 "They are in a specific subfolder",
-                 "I want to type file names manually",
-                 "Building a Bayesian Network graphical model",
-                 "Defining probability functions",
-                 "Computing the influence of each context variable",
-                 "Running to generate the Probability(ies) Band(s) (PB)",
+                 "In a specific subfolder",
+                 "Type file names manually",
+                 "Building the DAG",
+                 "Computing the CPTs",
+                 "Computing the influence KL score",
+                 "Generating the Probability(ies) Band(s) (PB)",
                  #"Generating the classified image",
-                 "Reading target variable (reference data for testing)",
+                 "Reading target variable (for testing)",
                  #"Accuracy assessment",
                  "Finding the best-TPV",
-                 "Defining manually",
-                 "Criterion: nearest 100% sensitivity and 100% specificity point",
-                 "Criterion: minimum difference between sensitivity and specificity",
-                 "Criterion: highest accuracy index",
-                 "Criterion: highest kappa index",
-                 "Criterion: most similar area (number of pixels) according to a reference data",
-                 "Criterion: minimum difference between omission and inclusion errors",
                  "Instructions...")
-  menu.action <- c("FUNCTION_write.the.heading.of.the.program()",
-                   "",
+ menu.action <- c("FUNCTION_write.the.heading.of.the.program()",
                    "FUNCTION_how.to.cite.the.program()",
                    "FUNCTION_before.beginning()",
                    "FUNCTION_read.target.variable()",
@@ -114,15 +111,8 @@ FUNCTION_eBayNeRD.R.menu.names <- function() {
                    "FUNCTION_probability.bands()",
                    #"FUNCTION_classification()",
                    "FUNCTION_read.target.variable.for.testing()",
-                   "",
-                   "FUNCTION_find.bestTPV(n.slices=101,criterion.number=0)",
-                   "FUNCTION_find.bestTPV(n.slices=101,criterion.number=1)",
-                   "FUNCTION_find.bestTPV(n.slices=101,criterion.number=2)",
-                   "FUNCTION_find.bestTPV(n.slices=101,criterion.number=3)",
-                   "FUNCTION_find.bestTPV(n.slices=101,criterion.number=4)",
-                   "FUNCTION_find.bestTPV(n.slices=101,criterion.number=5)",
-                   "FUNCTION_find.bestTPV(n.slices=101,criterion.number=6)",
                    #"FUNCTION_assessment()",
+                   "FUNCTION_find.bestTPV()",
                    "FUNCTION_instructions()")
 
   # Mounting the data.frame that contains the menu information
@@ -2330,8 +2320,8 @@ FUNCTION_read.target.variable.for.testing <- function() {
   if (use.same==F) {
     ok <- F
     while(ok==F) {
-      name.of.target.file <- readline(paste("\nEnter the file name (with path)
-                                            of the target data image (including the extension): ",sep=""))
+      name.of.target.file <- readline(paste0("\nEnter the file name (with path)",
+                                            "of the target data image (including the extension): "))
       if (file.exists(name.of.target.file)==T) ok <- T else cat("\n\nThis file (path) does not exist!\n")
     }
     rm(ok)
@@ -2421,7 +2411,9 @@ FUNCTION_read.target.variable.for.testing <- function() {
     ok <- F
     while(ok==F){
       temp1 <- ""
-      temp1 <- readline(paste("\nEnter the label corresponding to pixels outside the study area (mask - left blank if there is not): ",sep=""))
+      temp1 <- readline(
+         paste0("\nEnter the label corresponding to pixels outside\nthe study",
+               " area (left blank if there is not): "))
       if (temp1=="") ok <- T else
         if (sum(temp1==classes)>0) {ok <- T;temp$class.outside <- temp1} else {rm(temp1);cat("\n\nThis label does not exist!\n")}
     };rm(ok)
@@ -2430,7 +2422,9 @@ FUNCTION_read.target.variable.for.testing <- function() {
     ok <- F
     while(ok==F){
       temp2 <- ""
-      temp2 <- readline(paste("\nEnter the label corresponding to pixels with no-data inside the study area (left blank if there is not): ",sep=""))
+      temp2 <- readline(
+        paste0("\nEnter the label corresponding to pixels with no-data",
+               "inside the study area (left blank if there is not): "))
       if (temp2=="") ok <- T else
         if (temp2==temp1) {rm(temp2);cat("\n\nLabel already used!\n")} else
           if (sum(temp2==classes)>0) {ok <- T;temp$class.NA.inside <- temp2} else {rm(temp2);cat("\n\nThis label does not exist!\n")}
@@ -2447,7 +2441,9 @@ FUNCTION_read.target.variable.for.testing <- function() {
         for (i in 1:temp3){
           ok2 <- F
           while(ok2==F){
-            temp5 <- readline(paste("\nEnter the ",i,"th label corresponding to pixels of the 'target' class: ",sep=""))
+            temp5 <- readline(
+              paste0("\nEnter the ", i, "th label",
+                     " to pixels of the 'target' class: "))
             if (temp5=="") cat("\n\nYou must enter a valid label!\n") else
               if ((temp5==temp1)|(temp5==temp2)|(sum(temp4==temp5)>0)) {rm(temp5);cat("\n\nLabel already used!\n")} else
                 if (sum(temp5==classes)>0) {ok2 <- T;temp4 <- c(temp4,temp5)} else {rm(temp5);cat("\n\nThis label does not exist!\n")}
@@ -2482,7 +2478,7 @@ FUNCTION_read.target.variable.for.testing <- function() {
   file.path <- paste("./e-BayNeRD Outcomes/",name.target,"_test.tif",sep="")
   writeRaster(temp.data,filename=file.path,format='GTiff',overwrite=T)
 
-  eBayNeRDinfo$step.completed <- 0:8 #step 8 corresponds to assessment
+  eBayNeRDinfo$step.completed <- 0:7 
   eBayNeRDinfo$ref.for.test <- list(file=file.path,classes=temp)
   save(eBayNeRDinfo,file="eBayNeRDinfo.RData") #save the eBayNeRDinfo file inside the current working folder defined earlier
   load("eBayNeRDinfo.RData") #loading eBayNeRDinfo file
