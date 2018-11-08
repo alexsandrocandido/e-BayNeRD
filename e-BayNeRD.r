@@ -2320,8 +2320,8 @@ FUNCTION_read.target.variable.for.testing <- function() {
   if (use.same==F) {
     ok <- F
     while(ok==F) {
-      name.of.target.file <- readline(paste0("\nEnter the file name (with path)",
-                                            "of the target data image (including the extension): "))
+      name.of.target.file <- readline(paste0("\nEnter the file name (with path) of the\n",
+                                            "target data image (including the extension): "))
       if (file.exists(name.of.target.file)==T) ok <- T else cat("\n\nThis file (path) does not exist!\n")
     }
     rm(ok)
@@ -2423,7 +2423,7 @@ FUNCTION_read.target.variable.for.testing <- function() {
     while(ok==F){
       temp2 <- ""
       temp2 <- readline(
-        paste0("\nEnter the label corresponding to pixels with no-data",
+        paste0("\nEnter the label corresponding to pixels with no-data\n",
                "inside the study area (left blank if there is not): "))
       if (temp2=="") ok <- T else
         if (temp2==temp1) {rm(temp2);cat("\n\nLabel already used!\n")} else
