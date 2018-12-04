@@ -2924,7 +2924,7 @@ FUNCTION_find.bestTPV<-function(n.slices = 101, criterion.number = 1) {
 
   cat("\n\n\n\n Done!\n Thank you for using e-BayNeRD.\n",
       "We would appreciate if you write\n",
-      "an email to alexsandro.silva@inpe.br\n",
+      "an email to alexsandrocos5@gmail.com\n",
       "telling your experiences with e-BayNeRD.\n\n",
       "Best regards,\n\nAlexsandro Candido de Oliveira Silva\n\n")
 
