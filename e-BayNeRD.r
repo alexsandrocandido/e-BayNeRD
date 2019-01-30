@@ -1807,12 +1807,15 @@ FUNCTION_influence.KLscore <- function(obj,target,context) {
 
 
   # The KL computed the distance between conditional and marginal probabilities
-  pmarg <- querygrain(obj, nodes=target, type="marginal")
-  pcond <- querygrain(obj, nodes=c(target,context), type="conditional")
-  eval(parse(text=(paste("pmarg <- as.vector(pmarg$",target,")",sep=""))))
+  pmarg <- querygrain(obj, nodes=target)[[1]]
+  pcond <- t(querygrain(obj, nodes=c(target,context), type="conditional"))
   pmarg <- rep(pmarg,length(pcond)/length(pmarg))
+  
+  pcond <- pcond/sum(pcond)
+  pmarg <- pmarg/sum(pmarg)
+  
   # Gets the KL-score
-  klscore  <-  sum(pcond*log(pcond/pmarg))
+  klscore  <-  sum(pcond * log(pcond / pmarg))
   return(klscore)
 }
 
