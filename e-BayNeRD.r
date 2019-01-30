@@ -1835,21 +1835,21 @@ FUNCTION_running.influence.KLscore <- function() {
   gRain.obj <- as.grain(net)
 
   temp.result <- data.frame(KL.distance = rep(0,length(order.process)))
-  row.names(temp.result) <- order.process
-
-  for (i in 1:length(order.process))
-    eval(parse(text=(paste("temp.result[",i,",1] <-
-                           FUNCTION_influence.KLscore(gRain.obj, target.name,
-                           order.process[",i,"])", sep = ""))))
-
-  temp.result$Rank <- rank(1E10-temp.result$KL.distance)
+  
+  for (i in seq_along(order.process))
+    temp.result[i, 1] <- round(
+      FUNCTION_influence.KLscore(obj = gRain.obj, target = target.name,
+                                 context = order.process[i]), 4)
+  
+  temp.result$Rank <- rank(-temp.result$KL.distance)  # decreasing rank
   temp.result$Percentage <- round(temp.result$KL.distance /
-                                    sum(temp.result$KL.distance) * 100, 4)
+                                    sum(temp.result$KL.distance) * 100, 2)
+  id <- order(temp.result$Rank, sort(temp.result$Rank))
+  temp.result <- temp.result[id, ]
   temp.result <- temp.result[, c(2,3,1)]
-  cat("\n\n");
+  rownames(temp.result) <- order.process[id]
+  
   return(temp.result)
-  invisible(gc())
-  invisible(rm(list=ls()))
 }
 
 
