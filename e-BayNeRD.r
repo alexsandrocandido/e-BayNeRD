@@ -1945,7 +1945,6 @@ FUNCTION_probability.bands <- function() {
   # to shared memory and used by R workers in the parallel foreach loop.
   options(bigmemory.typecast.warning = F)
   all.data <- as.big.matrix(x = temp.data, type = "integer", separated = F,
-                            backingfile    = "eBayNeRD_File.bin",
                             descriptorfile = "eBayNeRD_File.desc")
   m <- ncol(all.data)
 
@@ -1973,7 +1972,6 @@ FUNCTION_probability.bands <- function() {
   options(bigmemory.typecast.warning = F)
   eval(parse(text=(paste("sharePB",classes," <- as.big.matrix(
                          x = aux", classes,", type = 'double', separated = F,
-                         backingfile = 'ProbBand",classes,"_File.bin',
                          descriptorfile = 'ProbBand", classes,"_File.desc')", sep = ""))))
 
   # # Gets a description/information to reference
@@ -2165,8 +2163,8 @@ FUNCTION_probability.bands <- function() {
     # Plots the Probability Bands
 
     eval(parse(text=(
-      paste("plot(ProbBand", i, ",
-            main = 'Probability Band - Class ", i, "')", sep = ""))))
+      paste("plot(ProbBand", classes[i], ",
+            main = 'Probability Band - Class ", classes[i], "')", sep = ""))))
   }
 
   # Probability Bands files path
