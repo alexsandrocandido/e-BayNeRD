@@ -12,6 +12,9 @@
 
 > SILVA, A. C. O.; FONSECA, L. M. G.; KORTING, T. S.. **Bayesian network model to predict areas for sugarcane expansion in Brazilian Cerrado**. Brazilian Journal of Cartography (2017), Nº 69/5, Special Issue GEOINFO 2017: 857-867. Brazilian Society of Cartography, Geodesy, Photgrammetry and Remote Sense ISSN: 1808-0936. [link](https://www.researchgate.net/publication/323783578_BAYESIAN_NETWORK_MODEL_TO_PREDICT_AREAS_FOR_SUGARCANE_EXPANSION_IN_BRAZILIAN_CERRADO)
 
+- Papers that employed the e-BayNeRD model:
+> NG, W. T. et al. **Ensemble approach for potential habitat mapping of invasive Prosopis spp. in Turkana, Kenya.** Ecology and Evolution, v. 8, n. 23, p. 11921–11931, 2018. [link](https://doi.org/10.1002/ece3.4649)
+
 
 ### **To run**
 To run the e-BayNeRD model:
