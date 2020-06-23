@@ -1,7 +1,7 @@
 # e-BayNeRD
 ## Enhanced Bayesian Network for Raster Data
 
-- The e-BayNeRD model is an enhanced version of the BayNeRD (Bayesian Network for Raster Data) model, which was developed by Mello et al (2013): [https://doi.org/10.3390/rs5115999](https://doi.org/10.3390/rs5115999). 
+- The e-BayNeRD model is an enhanced version of the BayNeRD (Bayesian Network for Raster Data) model, which was developed by Mello et al (2013): [link](https://doi.org/10.3390/rs5115999). 
 
 - The implemented improvements are described in the following conference paper: [link](http://www.geoinfo.info/proceedings_geoinfo2014.split/Paper12-F-p24.pdf)
 > SILVA, A. C. O.; MELLO, M. P.; FONSECA, L. M. G. **Enhancements to the Bayesian Network for Raster Data (BayNeRD).** XV Brazilian Symposium on GeoInformatics (2014). Proceedings of the Brazilian Symposium on GeoInformatics, Campos do Jordão, São Paulo, Brazil.
